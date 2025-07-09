@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Projet Final</title>
+</head>
+<body>
+  <h1>Ajouter un utilisateur</h1>
+  <form id="userForm">
+    <input type="text" id="nom" placeholder="Nom" required />
+    <input type="email" id="email" placeholder="Email" required />
+    <button type="submit">Envoyer</button>
+  </form>
+
+  <h2>Utilisateurs enregistrés</h2>
+  <ul id="userList"></ul>
+
+  <script>
+    const form = document.getElementById('userForm');
+    const userList = document.getElementById('userList');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nom = document.getElementById('nom').value;
+      const email = document.getElementById('email').value;
+
+      await fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nom, email })
+      });
+
+      form.reset();
+      chargerUtilisateurs();
+    });
+
+    async function chargerUtilisateurs() {
+      const res = await fetch('/api/users');
+      const users = await res.json();
+      userList.innerHTML = '';
+      users.forEach(u => {
+        const li = document.createElement('li');
+        li.textContent = `${u.nom} (${u.email})`;
+        userList.appendChild(li);
+      });
+    }
+
+    chargerUtilisateurs();
+  </script>
+</body>
+</html>
